@@ -5,22 +5,6 @@ services:
     networks:
       - app-network
 
-  backend:
-    image: ghcr.io/keerthi538/teamhub-backend:deploy
-    restart: always
-    env_file:
-      - .env
-    networks:
-      - app-network
-
-  collab:
-    image: ghcr.io/keerthi538/teamhub-collab-server:deploy
-    restart: always
-    env_file:
-      - .env
-    networks:
-      - app-network
-
   postgres:
     image: postgres:16
     environment:
@@ -29,6 +13,26 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    image: ghcr.io/keerthi538/teamhub-backend:deploy
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    networks:
+      - app-network
+
+  collab:
+    image: ghcr.io/keerthi538/teamhub-collab-server:deploy
+    restart: always
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    networks:
+      - app-network
 
   nginx:
     image: nginx:alpine
